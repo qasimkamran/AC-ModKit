@@ -1,0 +1,46 @@
+name: Windows Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      BUILD_DIR: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: "6.6.3"
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          modules: qt5compat
+
+      - name: Configure CMake
+        run: >
+          cmake
+          -S .
+          -B ${{ env.BUILD_DIR }}
+          -G "NMake Makefiles"
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build ${{ env.BUILD_DIR }} --config Release
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: ac-modkit-windows
+          path: |
+            ${{ env.BUILD_DIR }}/ac_modkit.exe
+
