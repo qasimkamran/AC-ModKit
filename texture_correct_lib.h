@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <optional>
 #include <string_view>
 
@@ -52,7 +53,8 @@ class ImageFormat
         Format value_ = Format::PNG;
 };
 
-DirectX::ScratchImage GetScratchImageFromFilename(std::string& filename);
+std::optional<DirectX::ScratchImage> GetScratchImageFromFilename(std::string filename);
+std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(std::string path);
 bool SaveScratchImageAsDds(DirectX::ScratchImage& image);
 
 } // namespace texture_correct
