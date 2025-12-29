@@ -26,6 +26,11 @@ jobs:
           arch: win64_msvc2019_64
           modules: qt5compat
 
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Configure CMake
         run: >
           cmake
@@ -43,4 +48,3 @@ jobs:
           name: ac-modkit-windows
           path: |
             ${{ env.BUILD_DIR }}/ac_modkit.exe
-
