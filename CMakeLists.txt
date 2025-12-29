@@ -5,6 +5,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
 add_library(texture_correct_lib STATIC
     texture_correct_lib.cpp
     texture_correct_lib.h
@@ -22,13 +28,30 @@ if(NOT WIN32)
     )
 endif()
 
+add_library(gui_lib STATIC
+    gui_lib.cpp
+    gui_lib.h
+)
+
+target_include_directories(gui_lib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(gui_lib
+    PUBLIC
+        Qt6::Widgets
+)
+
 add_executable(ac_modkit
     main.cpp
 )
 
 target_link_libraries(ac_modkit
     PRIVATE
+        gui_lib
         texture_correct_lib
+        Qt6::Widgets
 )
 
 add_executable(texture_correct_tests
@@ -48,3 +71,4 @@ target_link_libraries(directxtex_load_harness
     PRIVATE
         texture_correct_lib
 )
+
