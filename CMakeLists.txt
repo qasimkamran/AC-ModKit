@@ -21,7 +21,22 @@ target_include_directories(texture_correct_lib
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if(NOT WIN32)
+if(WIN32)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        DirectXTexProject
+        GIT_REPOSITORY https://github.com/microsoft/DirectXTex.git
+        GIT_TAG main
+    )
+
+    FetchContent_MakeAvailable(DirectXTexProject)
+
+    target_link_libraries(texture_correct_lib
+        PUBLIC
+            DirectXTex
+    )
+else()
     target_include_directories(texture_correct_lib
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/stubs
@@ -71,4 +86,3 @@ target_link_libraries(directxtex_load_harness
     PRIVATE
         texture_correct_lib
 )
-
