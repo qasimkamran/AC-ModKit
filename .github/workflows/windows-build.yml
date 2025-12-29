@@ -45,7 +45,11 @@ jobs:
       - name: Bundle Qt runtime
         run: |
           $windeployqt = Join-Path $env:Qt6_DIR "bin\windeployqt.exe"
-          & $windeployqt --release --no-translations --dir "${{ env.BUILD_DIR }}\deploy" "${{ env.BUILD_DIR }}\ac_modkit.exe"
+          $deployDir = Join-Path "${{ env.BUILD_DIR }}" "deploy"
+          New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
+          Copy-Item "${{ env.BUILD_DIR }}\ac_modkit.exe" $deployDir -Force
+          $deployExe = Join-Path $deployDir "ac_modkit.exe"
+          & $windeployqt --release --no-translations --dir $deployDir $deployExe
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
