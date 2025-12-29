@@ -33,7 +33,7 @@ static std::wstring ToWide(const std::string& utf8)
     return wide;
 }
 
-static bool FileValid(std::filesystem::path filepath)
+static bool FileValid(const std::filesystem::path& filepath)
 {
     std::error_code errorCode;
 
@@ -58,7 +58,7 @@ static bool FileValid(std::filesystem::path filepath)
     return true;
 }
 
-static bool DirValid(std::filesystem::path directory)
+static bool DirValid(const std::filesystem::path& directory)
 {
     std::error_code errorCode;
 
@@ -87,7 +87,8 @@ std::optional<DirectX::ScratchImage> GetScratchImageFromFilename(std::string pat
     DirectX::ScratchImage image;
     DirectX::TexMetadata info;
 
-    HRESULT result = LoadFromWICFile(ToWide(filepath).c_str(), DirectX::WIC_FLAGS_NONE, &info, image);
+    const std::wstring widePath = ToWide(filepath.string());
+    HRESULT result = LoadFromWICFile(widePath.c_str(), DirectX::WIC_FLAGS_NONE, &info, image);
 
     if(result != S_OK)
     {
@@ -103,7 +104,7 @@ std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(
 {
     std::vector<DirectX::ScratchImage> images;
 
-    std::filesystem::path directory(path);
+    const std::filesystem::path directory(path);
 
     if(!DirValid(directory))
         return std::nullopt;
@@ -123,7 +124,8 @@ std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(
         DirectX::ScratchImage image;
         DirectX::TexMetadata info;
 
-        HRESULT result = LoadFromWICFile(ToWide(filepath).c_str(), DirectX::WIC_FLAGS_NONE, &info, image);
+        const std::wstring widePath = ToWide(filepath.string());
+        HRESULT result = LoadFromWICFile(widePath.c_str(), DirectX::WIC_FLAGS_NONE, &info, image);
 
         if(result != S_OK)
             printf("ERROR: LoadFromWICFile failed to load %s\n", filepath.c_str());
@@ -157,19 +159,20 @@ static bool ScratchImageValid(DirectX::ScratchImage& image)
     return true;
 }
 
-bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string output_path)
+bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string outputPath)
 {
     if(!ScratchImageValid(image))
         return false;
 
-    if(!DirValid(std::filesystem::path(output_path)))
+    if(!DirValid(std::filesystem::path(outputPath)))
         return false;
 
+    const std::wstring wideOutput = ToWide(outputPath);
     HRESULT result = DirectX::SaveToDDSFile(image.GetImages(),
                                             image.GetImageCount(),
                                             image.GetMetadata(),
-                                            DDS_FLAGS_NONE,
-                                            ToWide(output_path).c_str());
+                                            static_cast<DirectX::DDS_FLAGS>(DirectX::DDS_FLAGS_NONE),
+                                            wideOutput.c_str());
 
     if(result != S_OK)
         return false;
