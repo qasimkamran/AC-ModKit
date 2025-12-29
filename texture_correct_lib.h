@@ -55,6 +55,7 @@ class ImageFormat
 
 std::optional<DirectX::ScratchImage> GetScratchImageFromFilename(std::string filename);
 std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(std::string path);
-bool SaveScratchImageAsDds(DirectX::ScratchImage& image);
+bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string output_path);
 
 } // namespace texture_correct
+

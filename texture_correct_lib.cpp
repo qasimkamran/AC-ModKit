@@ -16,7 +16,8 @@
 #include <DirectXTex.h>
 #include <winnls.h>
 
-using namespace texture_correct;
+namespace texture_correct
+{
 
 static std::wstring ToWide(const std::string& utf8)
 {
@@ -175,4 +176,6 @@ bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string output_path
 
     return true;
 }
+
+} // namespace texture_correct
 

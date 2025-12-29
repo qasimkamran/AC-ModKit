@@ -7,17 +7,38 @@
  */
 
 #include <DirectXTex.h>
+#include <winnls.h>
 
 #include <iostream>
+#include <string>
+#include <string_view>
+
+namespace
+{
+    std::wstring ToWide(std::string_view utf8)
+    {
+        if(utf8.empty())
+            return std::wstring();
+
+        const int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), static_cast<int>(utf8.size()), nullptr, 0);
+        if(sizeNeeded <= 0)
+            return std::wstring();
+
+        std::wstring wide(sizeNeeded, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, utf8.data(), static_cast<int>(utf8.size()), wide.data(), sizeNeeded);
+        return wide;
+    }
+}
 
 int main()
 {
     DirectX::ScratchImage scratchImage;
     DirectX::TexMetadata metadata;
 
-    const char* filename = "nonexistent.png";
+    const std::string filename = "nonexistent.png";
+    const std::wstring wideFilename = ToWide(filename);
 
-    const HRESULT result = LoadFromWICFile(filename, DirectX::WIC_FLAGS_NONE, &metadata, scratchImage);
+    const HRESULT result = LoadFromWICFile(wideFilename.c_str(), DirectX::WIC_FLAGS_NONE, &metadata, scratchImage);
 
     if(result == S_OK)
     {
@@ -28,4 +49,3 @@ int main()
     std::cout << "LoadFromWICFile failed as expected for " << filename << '\n';
     return 0;
 }
-

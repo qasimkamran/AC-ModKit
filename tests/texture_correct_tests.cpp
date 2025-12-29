@@ -9,7 +9,10 @@
 #include "texture_correct_lib.h"
 
 #include <array>
+#include <chrono>
+#include <filesystem>
 #include <iostream>
+#include <string>
 #include <string_view>
 
 namespace
@@ -21,6 +24,22 @@ namespace
             std::cerr << "FAIL: " << message << '\n';
             ++failures;
         }
+    }
+
+    std::filesystem::path CreateTempDirectory()
+    {
+        const auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        const auto tempRoot = std::filesystem::temp_directory_path();
+        const std::filesystem::path tempDir = tempRoot / ("texture_correct_tests_" + std::to_string(now));
+
+        std::filesystem::create_directories(tempDir);
+        return tempDir;
+    }
+
+    void RemoveDirectory(const std::filesystem::path& path)
+    {
+        std::error_code ec;
+        std::filesystem::remove_all(path, ec);
     }
 }
 
@@ -67,6 +86,26 @@ int main()
             "FromString should reject unrecognized extensions",
             failures);
 
+    const auto missingImage = texture_correct::GetScratchImageFromFilename("definitely_missing.png");
+    Require(!missingImage.has_value(),
+            "GetScratchImageFromFilename should fail for non-existent files",
+            failures);
+
+    const auto tempDir = CreateTempDirectory();
+
+    const auto emptyDirectoryResult = texture_correct::GetScratchImageVectorFromPath(tempDir.string());
+    Require(!emptyDirectoryResult.has_value(),
+            "GetScratchImageVectorFromPath should report failure when no valid images are present",
+            failures);
+
+    DirectX::ScratchImage scratchImage;
+    const bool saveResult = texture_correct::SaveScratchImageAsDds(scratchImage, tempDir.string());
+    Require(!saveResult,
+            "SaveScratchImageAsDds should fail when the ScratchImage metadata is invalid",
+            failures);
+
+    RemoveDirectory(tempDir);
+
     if(failures != 0)
     {
         std::cerr << failures << " test(s) failed\n";
@@ -76,4 +115,3 @@ int main()
     std::cout << "All texture_correct tests passed\n";
     return 0;
 }
-
