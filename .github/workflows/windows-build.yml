@@ -39,8 +39,8 @@ jobs:
           -G "NMake Makefiles"
           -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build (app + assets)
-        run: cmake --build ${{ env.BUILD_DIR }} --target copy_assets --config Release
+      - name: Build application
+        run: cmake --build ${{ env.BUILD_DIR }} --config Release
 
       - name: Bundle Qt runtime
         run: |
