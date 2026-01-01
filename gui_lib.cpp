@@ -92,7 +92,7 @@ public:
         : QDialog(parent)
     {
         ui.setupUi(this);
-        ui.textureCorrectStack->setCurrentWidget(ui.main);
+        ui.textureCorrectStack->setCurrentWidget(ui.welcome);
         ApplyBackgroundImage(*this);
 
         connect(
