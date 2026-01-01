@@ -39,8 +39,8 @@ jobs:
           -G "NMake Makefiles"
           -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build
-        run: cmake --build ${{ env.BUILD_DIR }} --config Release
+      - name: Build (app + assets)
+        run: cmake --build ${{ env.BUILD_DIR }} --target copy_assets --config Release
 
       - name: Bundle Qt runtime
         run: |
@@ -48,6 +48,7 @@ jobs:
           $deployDir = Join-Path "${{ env.BUILD_DIR }}" "deploy"
           New-Item -ItemType Directory -Force -Path $deployDir | Out-Null
           Copy-Item "${{ env.BUILD_DIR }}\ac_modkit.exe" $deployDir -Force
+          Copy-Item "${{ env.BUILD_DIR }}\assets" $deployDir -Recurse -Force
           $deployExe = Join-Path $deployDir "ac_modkit.exe"
           & $windeployqt --release --no-translations --dir $deployDir $deployExe
 
