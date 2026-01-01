@@ -9,45 +9,44 @@
 
 #include "gui_lib.h"
 
-#include <QLabel>
 #include <QApplication>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QWidget>
+#include <QDialog>
+
+#include "ui.h"
 
 namespace gui::detail
 {
 
-class LauncherWindow : public QWidget
+class LauncherWindow : public QDialog
 {
 public:
-    LauncherWindow()
+    LauncherWindow(QWidget* parent = nullptr)
+        : QDialog(parent)
     {
-        setWindowTitle("AC ModKit");
-        setMinimumSize(360, 200);
+        ui.setupUi(this);
+        ui.textureCorrectStack->setCurrentWidget(ui.main);
 
-        auto* layout = new QVBoxLayout(this);
-        layout->setSpacing(12);
+        connect(
+            ui.autoModeButton,
+            &QPushButton::clicked,
+            this,
+            [this]() { ui.textureCorrectStack->setCurrentWidget(ui.main); }
+        );
 
-        auto* header = new QLabel("Select application mode:", this);
-        header->setWordWrap(true);
-        header->setAlignment(Qt::AlignCenter);
-        layout->addWidget(header);
-
-        auto* autoModeButton = new QPushButton("Auto", this);
-        auto* manualModeButton = new QPushButton("Manual", this);
-
-        autoModeButton->setCursor(Qt::PointingHandCursor);
-        manualModeButton->setCursor(Qt::PointingHandCursor);
-
-        layout->addWidget(autoModeButton);
-        layout->addWidget(manualModeButton);
-
-        connect(autoModeButton, &QPushButton::clicked, this, []() {});
-        connect(manualModeButton, &QPushButton::clicked, this, []() {});
-
-        layout->addStretch(1);
+        connect(
+            ui.manualModeButton,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                ui.textureCorrectStack->setCurrentWidget(ui.manualMode);
+                ui.manualModeSubStack->setCurrentWidget(ui.singleFile);
+            }
+        );
     }
+
+private:
+    Ui::launcher ui;
 };
 
 } // namespace gui::detail
@@ -66,4 +65,3 @@ int RunGuiApplication(int argc, char* argv[])
 }
 
 } // namespace gui
-
