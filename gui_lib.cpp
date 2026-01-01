@@ -15,9 +15,8 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QPushButton>
-#include <QWidget>
 #include <QStringList>
-#include <QUrl>
+#include <QWidget>
 
 #include "ui.h"
 
@@ -69,12 +68,12 @@ void ApplyBackgroundImage(QWidget& widget)
         return;
     }
 
-    const auto backgroundUrl = QUrl::fromLocalFile(backgroundPath).toString();
+    const QString normalizedPath = QDir::fromNativeSeparators(backgroundPath);
     const QString style = QString::fromLatin1(
-        "background-image: url(%1);\n"
+        "background-image: url(\"%1\");\n"
         "background-repeat: no-repeat;\n"
         "background-position: center;")
-                               .arg(backgroundUrl);
+                               .arg(normalizedPath);
 
     widget.setAttribute(Qt::WA_StyledBackground, true);
     widget.setAutoFillBackground(true);
@@ -93,7 +92,7 @@ public:
         : QDialog(parent)
     {
         ui.setupUi(this);
-        ui.textureCorrectStack->setCurrentWidget(ui.welcome);
+        ui.textureCorrectStack->setCurrentWidget(ui.main);
         ApplyBackgroundImage(*this);
 
         connect(
