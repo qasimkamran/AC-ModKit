@@ -63,9 +63,7 @@ public:
         launcher->setMinimumSize(QSize(900, 600));
         launcher->setMaximumSize(QSize(900, 600));
         launcher->setAutoFillBackground(false);
-        launcher->setStyleSheet(QString::fromUtf8("background-image: url(ACModkit-Background.png);\n"
-"background-repeat: no-repeat;\n"
-"background-position: center;"));
+        launcher->setStyleSheet(QString());
         tabWidget = new QTabWidget(launcher);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
         tabWidget->setGeometry(QRect(50, 60, 800, 500));
@@ -649,4 +647,3 @@ namespace Ui {
 QT_END_NAMESPACE
 
 #endif // AC_2D_MODKITOGXXCJ_H
-
