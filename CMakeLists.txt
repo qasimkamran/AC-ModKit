@@ -48,6 +48,11 @@ add_library(gui_lib STATIC
     gui_lib.h
 )
 
+target_compile_definitions(gui_lib
+    PRIVATE
+        AC_MODKIT_SOURCE_ASSETS_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/assets\"
+)
+
 target_include_directories(gui_lib
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -68,6 +73,15 @@ target_link_libraries(ac_modkit
         texture_correct_lib
         Qt6::Widgets
 )
+
+add_custom_command(TARGET ac_modkit POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:ac_modkit>/assets
+)
+
+install(TARGETS ac_modkit)
+install(DIRECTORY assets DESTINATION .)
 
 add_executable(texture_correct_tests
     tests/texture_correct_tests.cpp

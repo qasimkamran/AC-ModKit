@@ -63,7 +63,7 @@ public:
         launcher->setMinimumSize(QSize(900, 600));
         launcher->setMaximumSize(QSize(900, 600));
         launcher->setAutoFillBackground(false);
-        launcher->setStyleSheet(QString::fromUtf8("background-image: url(/mnt/c/Users/qasim/Downloads/ACModkit-Background.png);\n"
+        launcher->setStyleSheet(QString::fromUtf8("background-image: url(ACModkit-Background.png);\n"
 "background-repeat: no-repeat;\n"
 "background-position: center;"));
         tabWidget = new QTabWidget(launcher);

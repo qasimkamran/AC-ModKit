@@ -10,9 +10,77 @@
 #include "gui_lib.h"
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDialog>
+#include <QDir>
+#include <QFileInfo>
+#include <QPushButton>
+#include <QWidget>
+#include <QStringList>
+#include <QUrl>
 
 #include "ui.h"
+
+namespace
+{
+
+QString ResolveAssetPath(const QString& fileName)
+{
+    const QString assetDir = QStringLiteral("assets");
+    const QString binaryCandidate = QDir(QCoreApplication::applicationDirPath())
+                                         .filePath(assetDir + QLatin1Char('/') + fileName);
+
+    if (QFileInfo::exists(binaryCandidate))
+    {
+        return binaryCandidate;
+    }
+
+#ifdef AC_MODKIT_SOURCE_ASSETS_DIR
+    const QString sourceCandidate = QDir(QStringLiteral(AC_MODKIT_SOURCE_ASSETS_DIR))
+                                        .filePath(fileName);
+
+    if (QFileInfo::exists(sourceCandidate))
+    {
+        return sourceCandidate;
+    }
+#endif
+
+    return {};
+}
+
+void ApplyBackgroundImage(QWidget& widget)
+{
+    const QStringList candidates{
+        QStringLiteral("ACModkit-Background.png"),
+        QStringLiteral("background.png"),
+    };
+
+    QString backgroundPath;
+    for (const auto& candidate : candidates)
+    {
+        backgroundPath = ResolveAssetPath(candidate);
+        if (!backgroundPath.isEmpty())
+        {
+            break;
+        }
+    }
+
+    if (backgroundPath.isEmpty())
+    {
+        return;
+    }
+
+    const auto backgroundUrl = QUrl::fromLocalFile(backgroundPath).toString();
+    const QString style = QString::fromLatin1(
+        "background-image: url(%1);\n"
+        "background-repeat: no-repeat;\n"
+        "background-position: center;")
+                               .arg(backgroundUrl);
+
+    widget.setStyleSheet(style);
+}
+
+} // namespace
 
 namespace gui::detail
 {
@@ -25,6 +93,7 @@ public:
     {
         ui.setupUi(this);
         ui.textureCorrectStack->setCurrentWidget(ui.main);
+        ApplyBackgroundImage(*this);
 
         connect(
             ui.autoModeButton,
