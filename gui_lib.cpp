@@ -51,7 +51,6 @@ QString ResolveAssetPath(const QString& fileName)
 void ApplyBackgroundImage(QWidget& widget)
 {
     const QStringList candidates{
-        QStringLiteral("ACModkit-Background.png"),
         QStringLiteral("background.png"),
     };
 
@@ -77,6 +76,8 @@ void ApplyBackgroundImage(QWidget& widget)
         "background-position: center;")
                                .arg(backgroundUrl);
 
+    widget.setAttribute(Qt::WA_StyledBackground, true);
+    widget.setAutoFillBackground(true);
     widget.setStyleSheet(style);
 }
 
