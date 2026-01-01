@@ -74,13 +74,13 @@ target_link_libraries(ac_modkit
         Qt6::Widgets
 )
 
-add_custom_target(copy_assets ALL
+add_custom_command(
+    TARGET ac_modkit POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/assets
             $<TARGET_FILE_DIR:ac_modkit>/assets
     COMMENT "Copying UI assets next to ac_modkit"
 )
-add_dependencies(copy_assets ac_modkit)
 
 install(TARGETS ac_modkit)
 install(DIRECTORY assets DESTINATION .)
