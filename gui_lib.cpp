@@ -182,7 +182,7 @@ private:
                 return;
 
             ui.imagePreviewLabel->setPixmap(*pixmap);
-            ui.filenameTextEdit->setPlainText(QFileInfo(filenames.front().trimmed()).fileName());
+            ui.filenameTextEdit->setText(QFileInfo(filenames.front().trimmed()).fileName());
         }
     }
 };
