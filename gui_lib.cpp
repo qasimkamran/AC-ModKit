@@ -14,6 +14,7 @@
 #include <QDialog>
 #include <QDir>
 #include <QFileInfo>
+#include <QPixmap>
 #include <QPushButton>
 #include <QStringList>
 #include <QToolButton>
@@ -77,7 +78,7 @@ static std::optional<QPixmap> GetScaledPixMapFromFilename(const QSize size, cons
     if(pixmap.isNull())
         return std::nullopt;
 
-    pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    pixmap = pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     return pixmap;
 }
@@ -141,10 +142,15 @@ public:
                 if(!texture_correct::FilenamesValid(filenames))
                     return;
 
-                if(filenames.count() > 1)
-                    ui.manualModeSubStack->setCurrentWidget(ui.multiFile);
+                // Check if the index has changed
+                const int currentIndex = ui.manualModeSubStack->currentIndex();
+
+                QWidget* target = (filenames.count() > 1) ? ui.multiFile : ui.singleFile;
+
+                if(ui.manualModeSubStack->currentWidget() == target)
+                    LauncherWindow::OnSetCurrentWidget(ui.manualModeSubStack->currentIndex());
                 else
-                    ui.manualModeSubStack->setCurrentWidget(ui.singleFile);
+                    ui.manualModeSubStack->setCurrentWidget(target);
             }
         );
 
