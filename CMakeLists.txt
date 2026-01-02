@@ -21,6 +21,11 @@ target_include_directories(texture_correct_lib
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_link_libraries(texture_correct_lib
+    PUBLIC
+        Qt6::Widgets
+)
+
 if(WIN32)
     include(FetchContent)
 
@@ -61,6 +66,7 @@ target_include_directories(gui_lib
 target_link_libraries(gui_lib
     PUBLIC
         Qt6::Widgets
+        texture_correct_lib
 )
 
 add_executable(ac_modkit
@@ -79,7 +85,6 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/assets
             $<TARGET_FILE_DIR:ac_modkit>/assets
-    COMMENT "Copying UI assets next to ac_modkit"
 )
 
 install(TARGETS ac_modkit)

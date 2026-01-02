@@ -6,15 +6,21 @@
  * */
 
 #include "texture_correct_lib.h"
-#include "winerror.h"
 
+#include <iterator>
+#include <qstringliteral.h>
 #include <system_error>
 #include <vector>
 #include <optional>
 #include <filesystem>
 
+#include <QFileDialog>
+#include <QObject>
+#include <QString>
+
 #include <DirectXTex.h>
 #include <winnls.h>
+#include "winerror.h"
 
 namespace texture_correct
 {
@@ -180,5 +186,25 @@ bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string outputPath)
     return true;
 }
 
-} // namespace texture_correct
+QStringList GetFilenamesFromDialog(QWidget* parent)
+{
+    QStringList filePatterns;
 
+    constexpr int formatCount = ImageFormat::Format::COUNT;
+
+    filePatterns.reserve(static_cast<int>(formatCount));
+
+    for(ImageFormat::Format format = ImageFormat::Format::PNG; format <= formatCount; format = static_cast<ImageFormat::Format>(format+1))
+    {
+        const std::string fileExtension = ImageFormat::ToString(format).data();
+        filePatterns << QStringLiteral("*.") + QString::fromUtf8(fileExtension.data(), static_cast<int>(fileExtension.size()));
+    }
+
+    const QString filter = QObject::tr("Image Files (%1)").arg(filePatterns.join(QLatin1Char(' ')));
+
+    QStringList filenameList = QFileDialog::getOpenFileNames(parent, QObject::tr("Select Images..."), QString(), filter);
+
+    return filenameList;
+}
+
+} // namespace texture_correct

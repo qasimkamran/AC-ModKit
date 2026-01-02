@@ -5,6 +5,9 @@
 #include <optional>
 #include <string_view>
 
+#include <QWidget>
+#include <QStringList>
+
 #include <DirectXTex.h>
 
 namespace texture_correct {
@@ -12,7 +15,7 @@ namespace texture_correct {
 class ImageFormat
 {
     public:
-        enum Format : uint8_t { PNG, JPG, BMP, GIF, TIFF };
+        enum Format : uint8_t { PNG, JPG, BMP, GIF, TIFF, COUNT };
 
         constexpr ImageFormat() = default;
 
@@ -34,6 +37,7 @@ class ImageFormat
                 case Format::BMP:  return "bmp";
                 case Format::GIF:  return "gif";
                 case Format::TIFF: return "tiff";
+                default: return "unknown";
             }
             return "unknown";
         }
@@ -56,6 +60,7 @@ class ImageFormat
 std::optional<DirectX::ScratchImage> GetScratchImageFromFilename(std::string filename);
 std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(std::string path);
 bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string output_path);
+QStringList GetFilenamesFromDialog(QWidget* parent);
 
 } // namespace texture_correct
 

@@ -16,71 +16,49 @@
 #include <QFileInfo>
 #include <QPushButton>
 #include <QStringList>
+#include <QToolButton>
 #include <QWidget>
+#include <vector>
 
+#include "texture_correct_lib.h"
 #include "ui.h"
 
-namespace
-{
-
-QString ResolveAssetPath(const QString& fileName)
+static QString ResolveAssetPath(const QString& fileName)
 {
     const QString assetDir = QStringLiteral("assets");
-    const QString binaryCandidate = QDir(QCoreApplication::applicationDirPath())
-                                         .filePath(assetDir + QLatin1Char('/') + fileName);
+    const QString binaryCandidate = QDir(QCoreApplication::applicationDirPath()).filePath(assetDir + QLatin1Char('/') + fileName);
 
-    if (QFileInfo::exists(binaryCandidate))
-    {
+    if(QFileInfo::exists(binaryCandidate))
         return binaryCandidate;
-    }
-
-#ifdef AC_MODKIT_SOURCE_ASSETS_DIR
-    const QString sourceCandidate = QDir(QStringLiteral(AC_MODKIT_SOURCE_ASSETS_DIR))
-                                        .filePath(fileName);
-
-    if (QFileInfo::exists(sourceCandidate))
-    {
-        return sourceCandidate;
-    }
-#endif
 
     return {};
 }
 
 void ApplyBackgroundImage(QWidget& widget)
 {
-    const QStringList candidates{
-        QStringLiteral("background.png"),
-    };
+    const QStringList candidates { QStringLiteral("background.png") };
 
     QString backgroundPath;
-    for (const auto& candidate : candidates)
+    for(const auto& candidate : candidates)
     {
         backgroundPath = ResolveAssetPath(candidate);
-        if (!backgroundPath.isEmpty())
-        {
+        if(!backgroundPath.isEmpty())
             break;
-        }
     }
 
-    if (backgroundPath.isEmpty())
-    {
+    if(backgroundPath.isEmpty())
         return;
-    }
 
     const QString normalizedPath = QDir::fromNativeSeparators(backgroundPath);
     const QString style = QString::fromLatin1(
         "background-image: url(\"%1\");\n"
         "background-repeat: no-repeat;\n"
-        "background-position: center;")
-                               .arg(normalizedPath);
+        "background-position: center;").arg(normalizedPath);
 
     widget.setAttribute(Qt::WA_StyledBackground, true);
     widget.setAutoFillBackground(true);
     widget.setStyleSheet(style);
 }
-
-} // namespace
 
 namespace gui::detail
 {
@@ -110,6 +88,20 @@ public:
             {
                 ui.textureCorrectStack->setCurrentWidget(ui.manualMode);
                 ui.manualModeSubStack->setCurrentWidget(ui.singleFile);
+            }
+        );
+
+        connect(
+            ui.browseToolButton,
+            &QToolButton::clicked,
+            this,
+            [this]()
+            {
+                const QStringList filenames = texture_correct::GetFilenamesFromDialog(this);
+                if (filenames.isEmpty())
+                    return;
+
+                ui.browseLineEdit->setText(filenames.join(QStringLiteral("; ")));
             }
         );
     }
