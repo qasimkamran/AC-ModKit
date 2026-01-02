@@ -78,7 +78,7 @@ static std::optional<QPixmap> GetScaledPixMapFromFilename(const QSize size, cons
     if(pixmap.isNull())
         return std::nullopt;
 
-    pixmap = pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    pixmap = pixmap.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     return pixmap;
 }
