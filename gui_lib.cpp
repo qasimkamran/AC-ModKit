@@ -71,6 +71,27 @@ static QStringList FilenamesFromQString(const QString* text)
     return text->split(';', Qt::SkipEmptyParts);
 }
 
+static QString StyledFilenameText(const QString& filename)
+{
+    static const char* kTemplate =
+        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+        "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        "<html><head><meta name=\"qrichtext\" content=\"1\" />"
+        "<meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+        "p, li { white-space: pre-wrap; }\n"
+        "hr { height: 1px; border-width: 0; }\n"
+        "li.unchecked::marker { content: \"\\2610\"; }\n"
+        "li.checked::marker { content: \"\\2612\"; }\n"
+        "</style></head><body style=\" font-family:'Sans Serif'; "
+        "font-size:9pt; font-weight:400; font-style:normal;\">\n"
+        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; "
+        "margin-left:0px; margin-right:0px; -qt-block-indent:0; "
+        "text-indent:0px;\"><span style=\" font-size:12pt; "
+        "font-style:italic; color:#ffffff;\">%1</span></p></body></html>";
+
+    return QString::fromLatin1(kTemplate).arg(filename.toHtmlEscaped());
+}
+
 static std::optional<QPixmap> GetScaledPixMapFromFilename(const QSize size, const QString& filename)
 {
     QPixmap pixmap = QPixmap(filename);
@@ -182,7 +203,8 @@ private:
                 return;
 
             ui.imagePreviewLabel->setPixmap(*pixmap);
-            ui.filenameTextEdit->setText(QFileInfo(filenames.front().trimmed()).fileName());
+            const auto displayName = QFileInfo(filenames.front().trimmed()).fileName();
+            ui.filenameTextEdit->setHtml(StyledFilenameText(displayName));
         }
     }
 };
