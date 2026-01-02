@@ -55,7 +55,13 @@ static bool FileValid(const std::filesystem::path& filepath)
         return false;
     }
 
-    if(!ImageFormat::FromString(filepath.extension().string()).has_value())
+    auto extension = filepath.extension().string();
+    if(!extension.empty() && extension.front() == '.')
+    {
+        extension.erase(extension.begin());
+    }
+
+    if(!ImageFormat::FromString(extension).has_value())
     {
         printf("ERROR: %s is not a recognized file extension\n", filepath.extension().c_str());
         return false;
@@ -211,12 +217,11 @@ QStringList GetFilenamesFromDialog(QWidget* parent)
 
 bool FilenamesValid(const QStringList& filenames)
 {
-    for(const QString filename : filenames)
+    for(const QString& filename : filenames)
     {
         const QString trimmed = filename.trimmed();
 
         std::filesystem::path filepath(trimmed.toStdString());
-
         if(!FileValid(filepath))
             return false;
     }
@@ -224,3 +229,4 @@ bool FilenamesValid(const QStringList& filenames)
 }
 
 } // namespace texture_correct
+
