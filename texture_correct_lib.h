@@ -61,6 +61,7 @@ std::optional<DirectX::ScratchImage> GetScratchImageFromFilename(std::string fil
 std::optional<std::vector<DirectX::ScratchImage>> GetScratchImageVectorFromPath(std::string path);
 bool SaveScratchImageAsDds(DirectX::ScratchImage& image, std::string output_path);
 QStringList GetFilenamesFromDialog(QWidget* parent);
+bool FilenamesValid(const QStringList& filenames);
 
 } // namespace texture_correct
 

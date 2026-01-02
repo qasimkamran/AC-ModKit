@@ -194,7 +194,9 @@ QStringList GetFilenamesFromDialog(QWidget* parent)
 
     filePatterns.reserve(static_cast<int>(formatCount));
 
-    for(ImageFormat::Format format = ImageFormat::Format::PNG; format <= formatCount; format = static_cast<ImageFormat::Format>(format+1))
+    for(ImageFormat::Format format = ImageFormat::Format::PNG;
+	format < formatCount;
+	format = static_cast<ImageFormat::Format>(format+1))
     {
         const std::string fileExtension = ImageFormat::ToString(format).data();
         filePatterns << QStringLiteral("*.") + QString::fromUtf8(fileExtension.data(), static_cast<int>(fileExtension.size()));
@@ -205,6 +207,20 @@ QStringList GetFilenamesFromDialog(QWidget* parent)
     QStringList filenameList = QFileDialog::getOpenFileNames(parent, QObject::tr("Select Images..."), QString(), filter);
 
     return filenameList;
+}
+
+bool FilenamesValid(const QStringList& filenames)
+{
+    for(const QString filename : filenames)
+    {
+        const QString trimmed = filename.trimmed();
+
+        std::filesystem::path filepath(trimmed.toStdString());
+
+        if(!FileValid(filepath))
+            return false;
+    }
+    return true;
 }
 
 } // namespace texture_correct

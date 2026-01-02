@@ -18,6 +18,7 @@
 #include <QStringList>
 #include <QToolButton>
 #include <QWidget>
+#include <qlineedit.h>
 #include <vector>
 
 #include "texture_correct_lib.h"
@@ -58,6 +59,11 @@ void ApplyBackgroundImage(QWidget& widget)
     widget.setAttribute(Qt::WA_StyledBackground, true);
     widget.setAutoFillBackground(true);
     widget.setStyleSheet(style);
+}
+
+static QStringList FilenamesFromQString(const QString* text)
+{
+    return text->split(';', Qt::SkipEmptyParts);
 }
 
 namespace gui::detail
@@ -102,6 +108,27 @@ public:
                     return;
 
                 ui.browseLineEdit->setText(filenames.join(QStringLiteral("; ")));
+            }
+        );
+
+        connect(
+            ui.browseLineEdit,
+            &QLineEdit::textChanged,
+            this,
+            [this](const QString& text)
+            {
+                if(text.trimmed().isEmpty())
+                    return;
+
+                const QStringList filenames = FilenamesFromQString(&text);
+
+                if(!texture_correct::FilenamesValid(filenames))
+                    return;
+
+                if(filenames.count() > 1)
+                    ui.manualModeSubStack->setCurrentWidget(ui.multiFile);
+                else
+                    ui.manualModeSubStack->setCurrentWidget(ui.singleFile);
             }
         );
     }
