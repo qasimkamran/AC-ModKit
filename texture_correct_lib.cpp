@@ -8,6 +8,7 @@
 #include "texture_correct_lib.h"
 
 #include <iterator>
+#include <qlabel.h>
 #include <qstringliteral.h>
 #include <system_error>
 #include <vector>

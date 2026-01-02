@@ -18,7 +18,11 @@
 #include <QStringList>
 #include <QToolButton>
 #include <QWidget>
+#include <optional>
 #include <qlineedit.h>
+#include <qpixmap.h>
+#include <qstackedwidget.h>
+#include <qwidget.h>
 #include <vector>
 
 #include "texture_correct_lib.h"
@@ -35,7 +39,7 @@ static QString ResolveAssetPath(const QString& fileName)
     return {};
 }
 
-void ApplyBackgroundImage(QWidget& widget)
+static void ApplyBackgroundImage(QWidget& widget)
 {
     const QStringList candidates { QStringLiteral("background.png") };
 
@@ -64,6 +68,18 @@ void ApplyBackgroundImage(QWidget& widget)
 static QStringList FilenamesFromQString(const QString* text)
 {
     return text->split(';', Qt::SkipEmptyParts);
+}
+
+static std::optional<QPixmap> GetScaledPixMapFromFilename(const QSize size, const QString& filename)
+{
+    QPixmap pixmap = QPixmap(filename);
+
+    if(pixmap.isNull())
+        return std::nullopt;
+
+    pixmap.scaled(size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    return pixmap;
 }
 
 namespace gui::detail
@@ -131,10 +147,37 @@ public:
                     ui.manualModeSubStack->setCurrentWidget(ui.singleFile);
             }
         );
+
+        connect(
+            ui.manualModeSubStack,
+            &QStackedWidget::currentChanged,
+            this,
+            &LauncherWindow::OnSetCurrentWidget
+        );
     }
 
 private:
     Ui::launcher ui;
+
+    void OnSetCurrentWidget(const int index)
+    {
+        if(ui.manualModeSubStack->widget(index) == ui.singleFile)
+        {
+            QString text = ui.browseLineEdit->text();
+
+            std::optional<QPixmap> pixmap = GetScaledPixMapFromFilename(ui.imagePreviewLabel->size(), text);
+
+            if(pixmap == std::nullopt)
+                return;
+
+            const QStringList filenames = FilenamesFromQString(&text);
+
+            if(!texture_correct::FilenamesValid(filenames))
+                return;
+
+            ui.imagePreviewLabel->setPixmap(*pixmap);
+        }
+    }
 };
 
 } // namespace gui::detail
