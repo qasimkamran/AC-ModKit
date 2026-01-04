@@ -87,7 +87,7 @@ static QString StyledFilenameText(const QString& filename)
         "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; "
         "margin-left:0px; margin-right:0px; -qt-block-indent:0; "
         "text-indent:0px;\"><span style=\" font-size:12pt; "
-        "font-style:italic; color:#ffffff;\">%1</span></p></body></html>";
+        "font-style:normal; color:#ffffff;\">%1</span></p></body></html>";
 
     return QString::fromLatin1(kTemplate).arg(filename.toHtmlEscaped());
 }
