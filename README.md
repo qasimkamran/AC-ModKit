@@ -42,6 +42,10 @@ The development of this project is halted if the README still contains this mess
 
 ## Screenshots
 
+<img width="595" height="434" alt="welcome tab" src="https://github.com/user-attachments/assets/bafbb033-163e-43be-b9ed-d3dda201501f" />
+<img width="609" height="436" alt="texture correct tab" src="https://github.com/user-attachments/assets/be17bfed-887e-4589-83d2-3ade665326ba" />
+<img width="603" height="437" alt="texture correct manual mode" src="https://github.com/user-attachments/assets/35063ff5-c82c-4d54-b861-21c96dabd5e1" />
+
 The GUI design and all the used widgets have been laid out using Qt Designer, the output `ui.h` file must then be included in-place of the committed one to this repository to replace existing widgets and styling throughout the GUI. Bear in mind that many of the names may need refactoring across the repository if they have been altered for existing widgets.
 
 ## License
